@@ -1,0 +1,4 @@
+错误时间: 2025-08-15 11:59:25.988845
+错误类型: NameError
+错误详情:
+name 'BASE_DIR' is not defined
