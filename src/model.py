@@ -10,7 +10,10 @@ def build_lstm_model(input_shape):
         Dense(config.CONFIG['Linear'], activation = config.CONFIG['Activation']),
         Dense(config.CONFIG['Output'])
     ])
-    model.compile(optimizer='adam', loss='mse')
+    model.compile(
+        optimizer='adam',
+        loss='mse',
+        metrics=['mae'])
     return model
 
 def load_saved_model(model_path):

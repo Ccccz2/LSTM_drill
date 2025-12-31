@@ -4,7 +4,7 @@
 import os
 from src import data_loading, model, training, utils
 from src.config import CONFIG, DATA_PATH, RESULT_SAVE_DIR, BASE_DIR
-
+from sklearn.preprocessing import StandardScaler
 
 def main():
     # 初始化运行状态
@@ -16,6 +16,9 @@ def main():
         raw_data = data_loading.load_data(DATA_PATH)
         X, y, scaler_X, scaler_y = data_loading.preprocess_data(raw_data, CONFIG['TIME_STEPS'])
         X_train, X_test, y_train, y_test = data_loading.get_train_test_data(X, y, CONFIG['TEST_SIZE'])
+        scaler_y = StandardScaler()
+        y_train_s = scaler_y.fit_transform(y_train)
+        y_test_s = scaler_y.transform(y_test)
 
         # 2. 模型构建
         model_path = os.path.join(BASE_DIR, CONFIG['MODEL_NAME'])
@@ -29,11 +32,17 @@ def main():
 
         # 3. 模型训练
         history = training.train_model(
-            drill_model, X_train, y_train, X_test, y_test, CONFIG)
+            drill_model,
+            X_train, y_train_s,
+            X_test, y_test_s,
+            CONFIG)
 
         # 4. 模型评估
         mae, real_y_test, real_y_pred = training.evaluate_model(
-            drill_model, X_test, y_test, scaler_y)
+            drill_model,
+            X_test, y_test_s,
+            scaler_y
+        )
         print(f"测试集平均绝对误差(MAE): {mae:.2f} N/mm²")
 
         # 5. 保存结果

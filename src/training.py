@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 import os
 
 
-
-def train_model(model, X_train, y_train, X_test, y_test, config):
+def train_model(model, X_train,  y_train_s, X_test, y_test_s, config):
     """训练模型"""
     callbacks = [
         EarlyStopping(patience=10, restore_best_weights=True),
@@ -14,21 +13,21 @@ def train_model(model, X_train, y_train, X_test, y_test, config):
     ]
 
     history = model.fit(
-        X_train, y_train,
+        X_train, y_train_s,
         epochs = config['EPOCHS'],
         batch_size = config['BATCH_SIZE'],
-        validation_data = (X_test, y_test),
+        validation_data = (X_test,  y_test_s),
         callbacks = callbacks,
         verbose = 1
     )
     return history
 
 
-def evaluate_model(model, X_test, y_test, scaler_y):
+def evaluate_model(model, X_test, y_test_s, scaler_y):
     """评估模型"""
-    y_pred = model.predict(X_test)
-    real_y_test = scaler_y.inverse_transform(y_test)
-    real_y_pred = scaler_y.inverse_transform(y_pred)
+    y_pred_s = model.predict(X_test)  # 预测的是缩放空间
+    real_y_test = scaler_y.inverse_transform(y_test_s)
+    real_y_pred = scaler_y.inverse_transform(y_pred_s)
     mae = mean_absolute_error(real_y_test, real_y_pred)
     return mae, real_y_test, real_y_pred
 
